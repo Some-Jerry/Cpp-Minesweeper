@@ -26,6 +26,7 @@ private:
     int mines;
     double score;
     bool gameover;
+    int tilesOpened;
     vector<vector<char>> displaymap;
     vector<vector<int>> scoremap;
     vector<vector<bool>> openTiles;
@@ -35,13 +36,18 @@ public:
     // Constructors
     Minesweeper(); 
 
+    // Gameplay Functions
+    void play();
+
     // Helper Functions
+    
     void difficulty_request(); // easy - medium - hard? effects map_size + mines
     void display_map();
     void display_scoremap();
     void generate_scoremap(); 
     bool index_valid(int row, int col, int size);
-    int tile_selection(); // 1 == game over
+    bool gameWon();
+    void tile_selection(); // 1 == game over
     void open_tile(int x, int y);
     void openZeroTile(int x, int y);
     pair<int,int> random_position(int map_size);
@@ -53,6 +59,7 @@ public:
     void set_mines(int mines);
     int get_score();
     void set_score(int score);
+    bool getGameover();
     
 
 };

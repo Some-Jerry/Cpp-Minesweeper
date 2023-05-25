@@ -5,7 +5,8 @@ using namespace std;
 Minesweeper::Minesweeper() {
     // Easy difficulty default values
     map_size = 5;
-    mines = 8;
+    mines = 0;
+    tilesOpened = 0;
     score = 0;
     gameover = false;
 
@@ -144,7 +145,7 @@ pair<int,int> Minesweeper::random_position(int map_size) {
 }
 
 // Takes in an index from the user for which tile they would like to open
-int Minesweeper::tile_selection() {
+void Minesweeper::tile_selection() {
     
     // Variables to store input and index
     string input;
@@ -170,38 +171,43 @@ int Minesweeper::tile_selection() {
         }
     }
 
-    // Open the tile (update score? and displaymap)
-    open_tile(x, y);
+    // Open the tile if its not open, open tile
+    if (!openTiles[x][y]) {
+        open_tile(x, y);
+    }
+    
 
     // Check if its a mine, and if so end the game
     if (this->scoremap[x][y] == -1) {
-        cout << "YOU LOSE" << endl;
         this->gameover = true;
-        return 1;
     } 
     
     // If we open a zero, open ALL adjacent tiles
-    else if (this->displaymap[x][y] == 0) {
+    if (this->scoremap[x][y] == 0) {
         // Recursively open all adjacent zero tiles
         openZeroTile(x, y);
     }
 
-    // Otherwise, it's a scored tile and has already been opened
+    // Otherwise, it's a scored tile and has been opened
     
-    return 0;
 }
 
 // Open the tile at index (x,y)
 void Minesweeper::open_tile(int x, int y) {
-    
+    // Update tilesOpened
+    tilesOpened++;
+
     // Turn scoremap into ASCII char
     char displayChar = this->scoremap[x][y] + '0';
+
+    // Change displayChar if its a mine (/)
+    if (displayChar == '/') {displayChar = 'x';}
     
     // Place ASCII char in displaymap
     this->displaymap[x][y] = displayChar;
     
     // Update bool vec of open tiles
-    openTiles[x][y] = true;
+    openTiles[x][y] = true; 
 }
 
 // Recursively open zero tile and all adjacent zero tiles
@@ -211,11 +217,41 @@ void Minesweeper::openZeroTile(int x, int y) {
         int newy = dir.second + y;
         if (index_valid(newx,newy,this->map_size)) {
             open_tile(newx, newy);
-            if (this->displaymap[newx][newy] == 0 && !this->openTiles[newx][newy]) {
+            if (this->scoremap[newx][newy] == 0 && !this->openTiles[newx][newy]) {
                 openZeroTile(newx,newy);
             } 
         }
     }
+}
+
+// Function to check if the game has been won
+bool Minesweeper::gameWon() {
+    return (this->tilesOpened == ((this->map_size * this->map_size) - mines));
+}
+
+// Return gameover status
+bool Minesweeper::getGameover() {
+    return this->gameover;
+}
+
+// Main Gameplay Loop
+void Minesweeper::play() {
+    
+    this->generate_scoremap();
+    this->display_map();
+
+    while (!this->gameover) {
+        this->tile_selection();
+        if (this->gameWon()) {
+            this->gameover = true;
+        }
+        this->display_map();
+    }
+
+    if (this->gameWon()) {cout << "You won!" << endl;}
+    else {cout << "You lost :(" << endl;}
+
+
 }
 
 // Main
@@ -223,22 +259,7 @@ int main() {
 
     Minesweeper game1;
 
-    game1.generate_scoremap();
-
-    game1.display_map();
-
-    game1.display_scoremap();
-
-    int lost = game1.tile_selection();
-
-    while(lost != 1) {
-        game1.display_map();
-        game1.display_scoremap();
-        lost = game1.tile_selection();
-    }
-
-    
-
+    game1.play();
 
     return(0);
 }
