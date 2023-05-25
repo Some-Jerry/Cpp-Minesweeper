@@ -9,6 +9,7 @@
 #include <sstream>
 #include <utility>
 #include <array>
+#include <cstdlib>
 
 using namespace std;
 
@@ -27,6 +28,7 @@ private:
     bool gameover;
     vector<vector<char>> displaymap;
     vector<vector<int>> scoremap;
+    vector<vector<bool>> openTiles;
     
 
 public:
@@ -41,6 +43,7 @@ public:
     bool index_valid(int row, int col, int size);
     int tile_selection(); // 1 == game over
     void open_tile(int x, int y);
+    void openZeroTile(int x, int y);
     pair<int,int> random_position(int map_size);
 
     // Getters + Setters

@@ -14,6 +14,7 @@ Minesweeper::Minesweeper() {
     // scoremap is ints, initliazed to zeros (0)
     displaymap.resize(map_size, vector<char>(map_size, '?'));
     scoremap.resize(map_size, vector<int>(map_size, 0));
+    openTiles.resize(map_size, vector<bool>(map_size, false));
 };
 
 // Generate mines / score tiles on the scoremap
@@ -173,31 +174,51 @@ int Minesweeper::tile_selection() {
     open_tile(x, y);
 
     // Check if its a mine, and if so end the game
-    if (this->displaymap[x][y] == -1) {
+    if (this->scoremap[x][y] == -1) {
         cout << "YOU LOSE" << endl;
         this->gameover = true;
         return 1;
     } 
+    
     // If we open a zero, open ALL adjacent tiles
     else if (this->displaymap[x][y] == 0) {
-        for (const auto& dir : directions) {
-            int newx = dir.first + x;
-            int newy = dir.second + y;
-            if (index_valid(newx,newy,this->map_size)) {
-                open_tile(newx, newy);
-            }
-        }
+        // Recursively open all adjacent zero tiles
+        openZeroTile(x, y);
     }
 
+    // Otherwise, it's a scored tile and has already been opened
     
-
     return 0;
 }
 
+// Open the tile at index (x,y)
 void Minesweeper::open_tile(int x, int y) {
-    this->displaymap[x][y] = this->scoremap[x][y];
+    
+    // Turn scoremap into ASCII char
+    char displayChar = this->scoremap[x][y] + '0';
+    
+    // Place ASCII char in displaymap
+    this->displaymap[x][y] = displayChar;
+    
+    // Update bool vec of open tiles
+    openTiles[x][y] = true;
 }
 
+// Recursively open zero tile and all adjacent zero tiles
+void Minesweeper::openZeroTile(int x, int y) {
+    for (const auto& dir : directions) {
+        int newx = dir.first + x;
+        int newy = dir.second + y;
+        if (index_valid(newx,newy,this->map_size)) {
+            open_tile(newx, newy);
+            if (this->displaymap[newx][newy] == 0 && !this->openTiles[newx][newy]) {
+                openZeroTile(newx,newy);
+            } 
+        }
+    }
+}
+
+// Main
 int main() {
 
     Minesweeper game1;
@@ -206,9 +227,17 @@ int main() {
 
     game1.display_map();
 
-    game1. display_scoremap();
+    game1.display_scoremap();
 
-    // game1.tile_selection();
+    int lost = game1.tile_selection();
+
+    while(lost != 1) {
+        game1.display_map();
+        game1.display_scoremap();
+        lost = game1.tile_selection();
+    }
+
+    
 
 
     return(0);
