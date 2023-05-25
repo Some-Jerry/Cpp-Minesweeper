@@ -5,7 +5,7 @@ using namespace std;
 Minesweeper::Minesweeper() {
     // Easy difficulty default values
     map_size = 5;
-    mines = 0;
+    mines = 4;
     tilesOpened = 0;
     score = 0;
     gameover = false;
@@ -26,7 +26,7 @@ void Minesweeper::generate_scoremap() {
     // While we have mines to place
     while (mine_count != 0) {
         // Get a random position on the map
-        pair<int,int> position = random_position(this->map_size);
+        pair<int, int> position = random_position(this->map_size);
         int x = position.first;
         int y = position.second;
 
@@ -52,13 +52,13 @@ void Minesweeper::generate_scoremap() {
             // Check to make sure it isn't a mine
             if (this->scoremap[i][j] != -1) {
 
-            // Check all adjacent cells for mines
+                // Check all adjacent cells for mines
                 for (const auto& dir : directions) {
                     int newi = i + dir.first;
                     int newj = j + dir.second;
 
                     // If the index is in the map
-                    if (index_valid(newi,newj,this->map_size)) {
+                    if (index_valid(newi, newj, this->map_size)) {
 
                         // and its a mine, increase tile score
                         if (this->scoremap[newi][newj] == -1) {
@@ -66,9 +66,9 @@ void Minesweeper::generate_scoremap() {
                         }
                     }
                 }
-            // Set tile score on scoremap
-            this->scoremap[i][j] = tilescore;
-            tilescore = 0;
+                // Set tile score on scoremap
+                this->scoremap[i][j] = tilescore;
+                tilescore = 0;
             }
         }
     }
@@ -84,7 +84,7 @@ bool Minesweeper::index_valid(int row, int col, int size) {
 void Minesweeper::display_map() {
 
     // Print spaces to line up top row of coords with displaymap
-    cout <<"   ";
+    cout << "   ";
 
     // Print the first row as coordinates for user input
     for (int i = 0; i < this->map_size; i++) {
@@ -96,7 +96,7 @@ void Minesweeper::display_map() {
     cout << "   ";
 
     // Print line to separate coordinates from game tiles
-        for (int i = 0; i < this->map_size; i++) {
+    for (int i = 0; i < this->map_size; i++) {
         cout << "- ";
     }
     cout << endl;
@@ -107,7 +107,7 @@ void Minesweeper::display_map() {
         cout << i << " |";
         i++;
         for (const auto& cell : row) {
-             cout << cell << " ";
+            cout << cell << " ";
         }
         cout << endl;
     }
@@ -118,23 +118,23 @@ void Minesweeper::display_scoremap() {
 
 
     for (const auto& row : this->scoremap) {
-            for (const auto& cell : row) {
-                cout << cell << " ";
-            }
-            cout << endl;
+        for (const auto& cell : row) {
+            cout << cell << " ";
         }
+        cout << endl;
     }
+}
 
 // Returns a random (x,y) position on the map
-pair<int,int> Minesweeper::random_position(int map_size) {
+pair<int, int> Minesweeper::random_position(int map_size) {
     // Return pair var
-    pair<int,int> ret;
-    
-    // Providing a seed value based on current time
-	srand((unsigned)time(NULL));
+    pair<int, int> ret;
 
-	// Get a random numbers 0-4 inclusive, set them as the pair to return
-	int first = rand() % map_size;
+    // Providing a seed value based on current time
+    srand((unsigned)time(NULL));
+
+    // Get a random numbers 0-4 inclusive, set them as the pair to return
+    int first = rand() % map_size;
     int second = rand() % map_size;
 
     ret.first = first;
@@ -146,15 +146,15 @@ pair<int,int> Minesweeper::random_position(int map_size) {
 
 // Takes in an index from the user for which tile they would like to open
 void Minesweeper::tile_selection() {
-    
+
     // Variables to store input and index
     string input;
-    int x,y;
+    int x, y;
     bool valid_input = false;
 
     // Request input until a valid index is entered
-    while(!valid_input) {
-        
+    while (!valid_input) {
+
         // Get user input
         cout << "Select a tile (E.g., \"0 0\"): ";
         getline(cin, input);
@@ -171,25 +171,21 @@ void Minesweeper::tile_selection() {
         }
     }
 
-    // Open the tile if its not open, open tile
-    if (!openTiles[x][y]) {
-        open_tile(x, y);
-    }
-    
-
-    // Check if its a mine, and if so end the game
-    if (this->scoremap[x][y] == -1) {
-        this->gameover = true;
-    } 
-    
     // If we open a zero, open ALL adjacent tiles
     if (this->scoremap[x][y] == 0) {
         // Recursively open all adjacent zero tiles
         openZeroTile(x, y);
     }
 
-    // Otherwise, it's a scored tile and has been opened
-    
+    // Check if its a mine, and if so end the game
+    else if (this->scoremap[x][y] == -1) {
+        this->gameover = true;
+    }
+
+    // Otherwise just open the scored tile
+    else {
+        open_tile(x, y);
+    }
 }
 
 // Open the tile at index (x,y)
@@ -201,25 +197,37 @@ void Minesweeper::open_tile(int x, int y) {
     char displayChar = this->scoremap[x][y] + '0';
 
     // Change displayChar if its a mine (/)
-    if (displayChar == '/') {displayChar = 'x';}
-    
+    if (displayChar == '/') { displayChar = 'x'; }
+
     // Place ASCII char in displaymap
     this->displaymap[x][y] = displayChar;
-    
+
     // Update bool vec of open tiles
-    openTiles[x][y] = true; 
+    openTiles[x][y] = true;
 }
 
 // Recursively open zero tile and all adjacent zero tiles
 void Minesweeper::openZeroTile(int x, int y) {
+
+    // Check each direction
     for (const auto& dir : directions) {
+
+        // Determine neighbor index as (newx, newy)
         int newx = dir.first + x;
         int newy = dir.second + y;
-        if (index_valid(newx,newy,this->map_size)) {
-            open_tile(newx, newy);
+
+        // If the index is valid
+        if (index_valid(newx, newy, this->map_size)) {
+
+            // Check if neighbor is a zero and not yet opened
             if (this->scoremap[newx][newy] == 0 && !this->openTiles[newx][newy]) {
-                openZeroTile(newx,newy);
-            } 
+                open_tile(newx, newy);
+                openZeroTile(newx, newy); // Recrusive call to open all neighboring zeros
+            }
+            // Otherwise its a scored tile to be opened
+            else if (!this->openTiles[newx][newy]) {
+                open_tile(newx, newy);
+            }
         }
     }
 }
@@ -236,7 +244,7 @@ bool Minesweeper::getGameover() {
 
 // Main Gameplay Loop
 void Minesweeper::play() {
-    
+
     this->generate_scoremap();
     this->display_map();
 
@@ -248,8 +256,9 @@ void Minesweeper::play() {
         this->display_map();
     }
 
-    if (this->gameWon()) {cout << "You won!" << endl;}
-    else {cout << "You lost :(" << endl;}
+    if (this->gameWon()) { cout << "You won!" << endl; }
+    else { cout << "You lost :(" << endl; }
+    this->display_scoremap();
 
 
 }
