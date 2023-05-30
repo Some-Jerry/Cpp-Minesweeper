@@ -242,9 +242,46 @@ bool Minesweeper::getGameover() {
     return this->gameover;
 }
 
+// Prompt user for difficult selection
+void Minesweeper::difficultySelect() {
+    int difficulty;
+    bool isInt = false;
+    while (!isInt) {
+
+        cout << "Difficulty Select" << endl
+        << "1 - Easy / 5x5 / 6 Mines" << endl
+        << "2 - Medium / 7x7 / 15 Mines" << endl
+        << "3 - Hard / 9x9 / 30 Mines" << endl
+        << "Enter your choice: ";
+        cin >> difficulty;
+        if (difficulty >= 1 && difficulty <= 3) {isInt = true;}
+    }
+
+    switch(difficulty) {
+        case 1:
+            this->set_mines(6);
+            this->set_map_size(5);
+        case 2:
+            this->set_mines(15);
+            this->set_map_size(7);
+        case 3:
+            this->set_mines(30);
+            this->set_map_size(9);
+    }
+}
+
+// Getters & Setters
+void Minesweeper::set_mines(int mines) {
+    this->mines = mines;
+}
+void Minesweeper::set_map_size(int map_size) {
+    this->map_size = map_size;
+}
+
 // Main Gameplay Loop
 void Minesweeper::play() {
 
+    this->difficultySelect();
     this->generate_scoremap();
     this->display_map();
 

@@ -41,7 +41,7 @@ public:
 
     // Helper Functions
     
-    void difficulty_request(); // easy - medium - hard? effects map_size + mines
+    void difficultySelect(); // easy - medium - hard? effects map_size + mines
     void display_map();
     void display_scoremap();
     void generate_scoremap(); 
