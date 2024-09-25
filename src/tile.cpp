@@ -7,8 +7,9 @@ private:
     int score;
 
 public:
-    // Constructor
-    Tile(bool isMine, int x, int y) : mine(isMine), open(false), score(0) {}
+    // Constructors
+    Tile() : mine(false), open(false), score(0) {}
+    Tile(bool isMine, bool isOpen, int startingScore) : mine(isMine), open(isOpen), score(startingScore) {}
 
     // Member functions
     bool get_is_Open() const {
@@ -32,7 +33,7 @@ public:
     }
 
     void set_score(int newScore) {
-        score= newScore;
+        score = newScore;
     }
 
 };

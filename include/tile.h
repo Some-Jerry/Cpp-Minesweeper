@@ -8,14 +8,15 @@ private:
     int score;
 
 public:
-    // Constructor
-    Tile(bool is_mine);
+    // Constructors
+    Tile();
+    Tile(bool isMine, bool isOpen, int startingScore);
 
     // Member functions
     bool get_is_Open() const;
-    bool set_is_Open() const;
+    void set_is_Open() const;
     bool get_is_Mine() const;
-    bool set_is_Mine() const;
+    void set_is_Mine(bool isMine) const;
     int get_score() const;
     void set_score(int newScore);
     
