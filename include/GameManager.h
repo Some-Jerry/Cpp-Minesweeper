@@ -1,16 +1,16 @@
-#ifndef MINESWEEPER_GAME_H
-#define MINESWEEPER_GAME_H
+#ifndef GAMEMANAGER_H
+#define GAMEMANAGER_H
 
 #include "Tilemap.h"
 
-class MinesweeperGame {
+class GameManager {
 private:
     Tilemap map;
     bool game_over;
     bool game_won;
 
 public:
-    MinesweeperGame(int height, int width, int num_mines);
+    GameManager(int height, int width, int num_mines);
 
     void start_game();
     bool open_tile(int x, int y);
@@ -25,4 +25,4 @@ private:
     void propagate_open(int x, int y);
 };
 
-#endif // MINESWEEPER_GAME_H
+#endif // GAMEMANAGER_H

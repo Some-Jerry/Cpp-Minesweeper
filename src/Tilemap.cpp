@@ -8,6 +8,10 @@ Tilemap::Tilemap(int h, int w, int startingMines) : height(h), width(w), mines(s
     tiles.resize(h * w, Tile());  // Initialize all tiles as non-mines
 }
 
+Tile& Tilemap::get_tile_at_index(int index) {
+    return tiles[index];
+}
+
 int Tilemap::get_height() const {
     return height;
 }

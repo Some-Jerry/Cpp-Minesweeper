@@ -27,6 +27,7 @@ public:
     void set_non_mines(int newNonMines);
 
     // Other member functions
+    Tile& get_tile_at_index(int index);
     void reset();
     void populate();
 };
