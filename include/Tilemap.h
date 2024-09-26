@@ -14,6 +14,7 @@ private:
 
 public:
     // Constructor
+    Tilemap();
     Tilemap(int h, int w, int mines);
 
     // Getters and setters
@@ -29,6 +30,7 @@ public:
     // Other member functions
     Tile& get_tile_at_index(int index);
     void reset();
+    void open_all_tiles();
     void populate();
 };
 

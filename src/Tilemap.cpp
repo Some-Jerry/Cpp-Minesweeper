@@ -3,9 +3,14 @@
 #include <algorithm>
 #include <utility>
 
+Tilemap::Tilemap() : height(9), width(9), mines(12) {
+    tiles.resize(height * width, Tile());
+    nonMines = height * width - mines;
+}
 
 Tilemap::Tilemap(int h, int w, int startingMines) : height(h), width(w), mines(startingMines) {
     tiles.resize(h * w, Tile());  // Initialize all tiles as non-mines
+    nonMines = height * width - mines;
 }
 
 Tile& Tilemap::get_tile_at_index(int index) {
@@ -53,6 +58,13 @@ void Tilemap::reset() {
     }
 }
 
+void Tilemap::open_all_tiles() {
+    // Open all tiles
+    for (auto& tile : tiles) {
+        tile.set_is_Open(true);  // Reconstruct each tile as a new tile (non-mine, closed, 0 score)
+    }
+}
+
 void Tilemap::populate() {
     // Reset tiles
     reset();
@@ -77,6 +89,7 @@ void Tilemap::populate() {
             if (!tiles[y * width + x].get_is_Mine()) {
                 int score = 0;
                 // Checks the lower 3 neighbors, middle 3 neighbors, upper 3 neighbors in that order
+                // Does it matter that this includes itself? No because we know this isn't a mine which is the only way score increments?
                 for (int dy = -1; dy <= 1; ++dy) {
                     for (int dx = -1; dx <= 1; ++dx) {
                         int nx = x + dx, ny = y + dy;
@@ -88,7 +101,6 @@ void Tilemap::populate() {
                         }
                     }
                 }
-                // Assuming we add a set_Score method to Tile class
                 tiles[y * width + x].set_score(score);
             }
         }
